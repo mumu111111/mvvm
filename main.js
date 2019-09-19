@@ -1,5 +1,10 @@
 //实现双向绑定
 
+//发布订阅
+
+
+
+
 // data数据劫持
 function Observer(data) {
     for (var key in data) {
@@ -14,10 +19,11 @@ function Observer(data) {
                     return
                 }
                 val = newVal
-
+                dep.notify()
             }
 
         })
     }
 }
 
+// 数据监听  
