@@ -1,8 +1,13 @@
 //实现双向绑定
-
 //发布订阅
-
-
+function Subject() {
+    this.subs = []
+}
+Subject.prototype.addObserver = function () { }
+Subject.prototype.delObserver = function () { }
+Subject.prototype.notify = function () {
+    this.subs.forEach(sub => { sub.update() })
+}
 
 
 // data数据劫持
@@ -26,4 +31,15 @@ function Observer(data) {
     }
 }
 
-// 数据监听  
+// 数据监听  监听到value变化 改变页面
+function Watcher(vm, key, fn) {
+    this.vm = vm
+    this.key = key
+    this.fn - fn
+
+}
+Watcher.prototype.update = function () {
+    this.fn(this.vm[this.key])
+}
+
+
