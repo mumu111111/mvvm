@@ -9,7 +9,26 @@
 </head>
 
 <body>
-
+    <div class="app">
+        <h1>{{name}}</h1>
+        <div class="article">
+            <h2>{{title}}</h2>
+            <span>{{time}}</span>
+            <p>{{content}}</p>
+        </div>
+    </div>
+    <script src="./main.js"></script>
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data: {
+                name: 'd',
+                title: 'fdf',
+                time: '2019-09',
+                content: '实现了。。。'
+            }
+        })
+    </script>
 </body>
 
 </html>
