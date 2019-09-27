@@ -3,15 +3,78 @@
 function Subject() {
     this.subs = []
 }
-Subject.prototype.addObserver = function () { }
-Subject.prototype.delObserver = function () { }
+Subject.prototype.addSub = function (sub) {
+    this.subs.push(sub)
+}
 Subject.prototype.notify = function () {
     this.subs.forEach(sub => { sub.update() })
 }
 
 
+//模拟vue操作 
+function Vue(options = {}) {
+    this.$options = options
+    this._data = this.$options.data
+
+    new Observer(this._data)
+
+    for (const key in this._data) {
+        Object.defineProperty(this, key, {
+            enumerable: true,
+            get() {
+                return this._data[key]
+            },
+            set(newVal) {
+                this._data[key] = newVal
+            }
+        })
+    }
+    new compile(this.$options.el, this)
+
+}
+
+function compile(el, vm) { //#app  vue实例
+    vm.$el = document.querySelector(el)  //dom
+    const fragment = document.createDocumentFragment() //虚拟dom
+    let child = null
+    while (child = vm.$el.firstChild) {
+        fragment.appendChild(child)
+
+    }
+
+    replace(fragment) //替换
+
+    vm.$el.append(fragment)  //添加到真是dom
+
+    function replace(fragment) {
+        const pattern = /\{\{(.*)\}\}/
+        Array.from(fragment.childNodes).forEach(node => {
+            let text = node.textContent
+            if (node.nodeType === 3 && pattern.test(text)) {
+                const key = RegExp.$1.trim()
+                new Watcher(vm, key, (newVal) => {
+                    node.textContent = text.replace(pattern, newVal)
+                })
+                node.textContent = text.replace(pattern, vm[key])
+
+
+            }
+            if (node.childNodes && node.childNodes.length) {
+                replace(node)
+            }
+        })
+    }
+
+
+}
+
+
+
+
+
 // data数据劫持
 function Observer(data) {
+    const subject = new Subject()
     for (var key in data) {
         let val = data[key]  //必须用let 形成块级作用域  保证val是每一个
         Object.defineProperty(data, key, {
@@ -24,7 +87,7 @@ function Observer(data) {
                     return
                 }
                 val = newVal
-                dep.notify()
+                subject.notify()
             }
 
         })
