@@ -1,23 +1,20 @@
 //实现双向绑定
-//发布订阅
-function Subject() {
+//发布订阅模式
+function Dep() {
     this.subs = []
 }
-Subject.prototype.addSub = function (sub) {
+Dep.prototype.addSub = function (sub) {
     this.subs.push(sub)
 }
-Subject.prototype.notify = function () {
+Dep.prototype.notify = function () {
     this.subs.forEach(sub => { sub.update() })
 }
-
 
 //模拟vue操作 
 function Vue(options = {}) {
     this.$options = options
     this._data = this.$options.data
-
     new Observer(this._data)
-
     for (const key in this._data) {
         Object.defineProperty(this, key, {
             enumerable: true,
@@ -64,19 +61,12 @@ function compile(el, vm) { //#app  vue实例
             }
         })
     }
-
-
 }
 
-
-
-
-
-// data数据劫持
 function Observer(data) {
-    const subject = new Subject()
+    const Dep = new Dep()
     for (var key in data) {
-        let val = data[key]  //必须用let 形成块级作用域  保证val是每一个
+        let val = data[key]  //必须用let 形成块级作用域  保证val是当时那一个val
         Object.defineProperty(data, key, {
             enumerable: true,
             get() {
@@ -87,9 +77,8 @@ function Observer(data) {
                     return
                 }
                 val = newVal
-                subject.notify()
+                Dep.notify()
             }
-
         })
     }
 }
@@ -99,7 +88,6 @@ function Watcher(vm, key, fn) {
     this.vm = vm
     this.key = key
     this.fn - fn
-
 }
 Watcher.prototype.update = function () {
     this.fn(this.vm[this.key])
